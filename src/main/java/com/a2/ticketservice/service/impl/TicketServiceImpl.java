@@ -15,6 +15,8 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import java.math.BigDecimal;
+import java.util.List;
+import java.util.Optional;
 
 @Service
 public class TicketServiceImpl implements TicketService {
@@ -30,9 +32,9 @@ public class TicketServiceImpl implements TicketService {
 
     public void createTicket(TicketCreateDto ticketCreateDto){
 
+        //Get flight from flight service
         ResponseEntity<FlightDto> flightDtoResponseEntity = null;
         try {
-            //Get flight from flight service
             flightDtoResponseEntity = flightServiceRestTemplate.exchange("/flight/"+ticketCreateDto.getFlightId(),
                     HttpMethod.GET, null, FlightDto.class);
 
@@ -42,8 +44,8 @@ public class TicketServiceImpl implements TicketService {
         }catch (Exception e){
             e.printStackTrace();
         }
-        ResponseEntity<DiscountDto> discountDtoResponseEntity = null;
 
+        ResponseEntity<DiscountDto> discountDtoResponseEntity = null;
         try{
             //Get discount from user service
             discountDtoResponseEntity = userServiceRestTemplate.exchange("/user/"+ticketCreateDto.getUserId()+"/discount",
@@ -53,12 +55,21 @@ public class TicketServiceImpl implements TicketService {
         }
 
         //TODO Post ticket to user database, update miles, update rank
+        //Check capacity
 
         //Calculate price
         BigDecimal price = flightDtoResponseEntity.getBody().getPrice().multiply(discountDtoResponseEntity.getBody().getDiscount());
 
+        //Update miles
+
         //Save ticket
         Ticket ticket = new Ticket(ticketCreateDto.getUserId(), ticketCreateDto.getFlightId(), price);
         ticketRepository.save(ticket);
+    }
+
+    @Override
+    public Integer flightCapacity(Long flightId) {
+        List<Ticket> tickets = ticketRepository.findAllByFlightId(flightId);
+        return tickets.size();
     }
 }

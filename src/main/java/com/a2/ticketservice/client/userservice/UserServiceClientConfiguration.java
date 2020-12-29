@@ -8,7 +8,6 @@ public class UserServiceClientConfiguration {
     @Bean
     public RestTemplate userServiceRestTemplate(){
         RestTemplate restTemplate = new RestTemplate();
-        //TODO Address of the user service
         restTemplate.setUriTemplateHandler(new DefaultUriBuilderFactory("http://localhost:8081/api"));
         return restTemplate;
     }
