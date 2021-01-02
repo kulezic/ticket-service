@@ -4,9 +4,12 @@ import com.a2.ticketservice.client.flightservice.FlightDto;
 import com.a2.ticketservice.client.userservice.DiscountDto;
 import com.a2.ticketservice.domain.Ticket;
 import com.a2.ticketservice.dto.TicketCreateDto;
+import com.a2.ticketservice.dto.TicketDto;
 import com.a2.ticketservice.exception.NotFoundException;
+import com.a2.ticketservice.mapper.TicketMapper;
 import com.a2.ticketservice.repository.TicketRepository;
 import com.a2.ticketservice.service.TicketService;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,19 +18,22 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import java.math.BigDecimal;
+import java.util.Comparator;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class TicketServiceImpl implements TicketService {
      private TicketRepository ticketRepository;
      private RestTemplate flightServiceRestTemplate;
      private RestTemplate userServiceRestTemplate;
+     private TicketMapper ticketMapper;
 
-    public TicketServiceImpl(TicketRepository ticketRepository, RestTemplate flightServiceRestTemplate, RestTemplate userServiceRestTemplate) {
+    public TicketServiceImpl(TicketRepository ticketRepository, RestTemplate flightServiceRestTemplate, RestTemplate userServiceRestTemplate,
+                             TicketMapper ticketMapper) {
         this.ticketRepository = ticketRepository;
         this.flightServiceRestTemplate = flightServiceRestTemplate;
         this.userServiceRestTemplate = userServiceRestTemplate;
+        this.ticketMapper = ticketMapper;
     }
 
     public void createTicket(TicketCreateDto ticketCreateDto){
@@ -54,8 +60,8 @@ public class TicketServiceImpl implements TicketService {
             e.printStackTrace();
         }
 
-        //TODO Post ticket to user database, update miles, update rank
         //Check capacity
+
 
         //Calculate price
         BigDecimal price = flightDtoResponseEntity.getBody().getPrice().multiply(discountDtoResponseEntity.getBody().getDiscount());
@@ -71,5 +77,11 @@ public class TicketServiceImpl implements TicketService {
     public Integer flightCapacity(Long flightId) {
         List<Ticket> tickets = ticketRepository.findAllByFlightId(flightId);
         return tickets.size();
+    }
+
+    @Override
+    public Page<TicketDto> findAllByUserId(Long userId) {
+        //TODO Sort by created date
+        return ticketRepository.findAllByUserId(userId).map(ticketMapper::ticketToTicketDto);
     }
 }
