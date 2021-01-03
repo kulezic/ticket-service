@@ -3,6 +3,7 @@ package com.a2.ticketservice.client.flightservice;
 import java.math.BigDecimal;
 
 public class FlightDto {
+    private Long flightId;
     private String startDest;
     private String endDest;
     private BigDecimal miles;
@@ -11,11 +12,20 @@ public class FlightDto {
     public FlightDto() {
     }
 
-    public FlightDto(String startDest, String endDest, BigDecimal miles, BigDecimal price) {
+    public FlightDto(Long flightId, String startDest, String endDest, BigDecimal miles, BigDecimal price) {
+        this.flightId = flightId;
         this.startDest = startDest;
         this.endDest = endDest;
         this.miles = miles;
         this.price = price;
+    }
+
+    public Long getFlightId() {
+        return flightId;
+    }
+
+    public void setFlightId(Long flightId) {
+        this.flightId = flightId;
     }
 
     public String getStartDest() {

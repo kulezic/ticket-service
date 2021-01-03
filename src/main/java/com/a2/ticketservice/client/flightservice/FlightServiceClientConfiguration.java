@@ -11,7 +11,6 @@ public class FlightServiceClientConfiguration {
     @Bean
     public RestTemplate flightServiceRestTemplate(){
         RestTemplate restTemplate = new RestTemplate();
-        //TODO Address of the flight service
         restTemplate.setUriTemplateHandler(new DefaultUriBuilderFactory("http://localhost:8081/api"));
         return restTemplate;
     }
