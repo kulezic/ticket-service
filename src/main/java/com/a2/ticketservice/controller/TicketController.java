@@ -21,7 +21,7 @@ public class TicketController {
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
-    @GetMapping
+    @GetMapping("flightId/{id}")
     public ResponseEntity<Integer> checkCapacity(@PathVariable("id") Long id) {
         return new ResponseEntity<>(ticketService.flightCapacity(id), HttpStatus.OK);
     }
