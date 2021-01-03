@@ -1,15 +1,15 @@
 package com.a2.ticketservice.dto;
 
-public class CancelTicketDto {
+public class FlightCancelDto {
     private Long flightId;
     private Long miles;
 
-    public CancelTicketDto(Long flightId, Long miles) {
+    public FlightCancelDto(Long flightId, Long miles) {
         this.flightId = flightId;
         this.miles = miles;
     }
 
-    public CancelTicketDto() {
+    public FlightCancelDto() {
     }
 
     public Long getFlightId() {

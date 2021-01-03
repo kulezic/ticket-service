@@ -3,10 +3,7 @@ package com.a2.ticketservice.service.impl;
 import com.a2.ticketservice.client.flightservice.FlightDto;
 import com.a2.ticketservice.client.userservice.DiscountDto;
 import com.a2.ticketservice.domain.Ticket;
-import com.a2.ticketservice.dto.CancelTicketDto;
-import com.a2.ticketservice.dto.CancelMilesDto;
-import com.a2.ticketservice.dto.TicketCreateDto;
-import com.a2.ticketservice.dto.TicketDto;
+import com.a2.ticketservice.dto.*;
 import com.a2.ticketservice.exception.NotFoundException;
 import com.a2.ticketservice.mapper.TicketMapper;
 import com.a2.ticketservice.repository.TicketRepository;
@@ -37,7 +34,8 @@ public class TicketServiceImpl implements TicketService {
      private ObjectMapper objectMapper;
 
      private JmsTemplate jmsTemplate;
-     private String destinationCancelMiles;
+     private String destinationCancelTicket;
+     private String destinationIncrementMiles;
 
 
     public TicketServiceImpl(TicketRepository ticketRepository,
@@ -46,14 +44,16 @@ public class TicketServiceImpl implements TicketService {
                              TicketMapper ticketMapper,
                              ObjectMapper objectMapper,
                              JmsTemplate jmsTemplate,
-                             @Value("${destination.cancel-miles}") String destinationCancelMiles) {
+                             @Value("${destination.cancel-ticket}") String destinationCancelTicket,
+                             @Value("${destination.increment-miles}") String destinationIncrementMiles) {
         this.ticketRepository = ticketRepository;
         this.flightServiceRestTemplate = flightServiceRestTemplate;
         this.userServiceRestTemplate = userServiceRestTemplate;
          this.ticketMapper = ticketMapper;
         this.objectMapper = objectMapper;
         this.jmsTemplate = jmsTemplate;
-        this.destinationCancelMiles = destinationCancelMiles;
+        this.destinationCancelTicket = destinationCancelTicket;
+        this.destinationIncrementMiles = destinationIncrementMiles;
     }
 
     public void createTicket(TicketCreateDto ticketCreateDto){
@@ -96,6 +96,14 @@ public class TicketServiceImpl implements TicketService {
 
         //Update miles
 
+        try {
+            jmsTemplate.convertAndSend(destinationIncrementMiles, objectMapper.writeValueAsString(
+                    new IncrementMilesDto(ticketCreateDto.getUserId(), flightDtoResponseEntity.getBody().getMiles())
+            ));
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+
         //Save ticket
         Ticket ticket = new Ticket(ticketCreateDto.getUserId(), ticketCreateDto.getFlightId(), price);
         ticketRepository.save(ticket);
@@ -114,14 +122,14 @@ public class TicketServiceImpl implements TicketService {
     }
 
     @Override
-    public void cancelTickets(CancelTicketDto cancelTicketDto){
-        List<Ticket> tickets = ticketRepository.findAllByFlightId(cancelTicketDto.getFlightId());
+    public void cancelTickets(FlightCancelDto flightCancelDto){
+        List<Ticket> tickets = ticketRepository.findAllByFlightId(flightCancelDto.getFlightId());
         for (Ticket ticket:
              tickets) {
             //TODO Update status as CANCELED
             try {
-                jmsTemplate.convertAndSend(destinationCancelMiles,
-                        objectMapper.writeValueAsString(new CancelMilesDto(ticket.getUserId(), cancelTicketDto.getMiles())));
+                jmsTemplate.convertAndSend(destinationCancelTicket,
+                        objectMapper.writeValueAsString(new TicketCancelDto(ticket.getUserId(), flightCancelDto.getMiles())));
             } catch (JsonProcessingException e) {
                 e.printStackTrace();
             }

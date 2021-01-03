@@ -1,6 +1,7 @@
 package com.a2.ticketservice.service;
 
-import com.a2.ticketservice.dto.CancelTicketDto;
+import com.a2.ticketservice.dto.FlightCancelDto;
+import com.a2.ticketservice.dto.TicketCancelDto;
 import com.a2.ticketservice.dto.TicketCreateDto;
 import com.a2.ticketservice.dto.TicketDto;
 import org.springframework.data.domain.Page;
@@ -13,5 +14,5 @@ public interface TicketService {
 
     Page<TicketDto> findAllByUserId(Long userId);
 
-    void cancelTickets(CancelTicketDto cancelTicketDto);
+    void cancelTickets(FlightCancelDto flightCancelDto);
 }

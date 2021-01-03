@@ -6,13 +6,13 @@ public class FlightDto {
     private Long flightId;
     private String startDest;
     private String endDest;
-    private BigDecimal miles;
+    private Long miles;
     private BigDecimal price;
 
     public FlightDto() {
     }
 
-    public FlightDto(Long flightId, String startDest, String endDest, BigDecimal miles, BigDecimal price) {
+    public FlightDto(Long flightId, String startDest, String endDest, Long miles, BigDecimal price) {
         this.flightId = flightId;
         this.startDest = startDest;
         this.endDest = endDest;
@@ -44,11 +44,11 @@ public class FlightDto {
         this.endDest = endDest;
     }
 
-    public BigDecimal getMiles() {
+    public Long getMiles() {
         return miles;
     }
 
-    public void setMiles(BigDecimal miles) {
+    public void setMiles(Long miles) {
         this.miles = miles;
     }
 
