@@ -1,4 +1,4 @@
-package com.a2.ticketservice.dto;
+package com.a2.ticketservice.client.flightservice;
 
 public class FlightCancelDto {
     private Long flightId;

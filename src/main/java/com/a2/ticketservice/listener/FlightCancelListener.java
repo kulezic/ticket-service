@@ -1,6 +1,6 @@
 package com.a2.ticketservice.listener;
 
-import com.a2.ticketservice.dto.FlightCancelDto;
+import com.a2.ticketservice.client.flightservice.FlightCancelDto;
 import com.a2.ticketservice.service.TicketService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.jms.annotation.JmsListener;

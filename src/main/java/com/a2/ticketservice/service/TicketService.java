@@ -1,5 +1,6 @@
 package com.a2.ticketservice.service;
 
+import com.a2.ticketservice.client.flightservice.FlightCancelDto;
 import com.a2.ticketservice.dto.*;
 import org.springframework.data.domain.Page;
 
