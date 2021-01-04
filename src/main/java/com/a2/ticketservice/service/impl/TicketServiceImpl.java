@@ -80,7 +80,7 @@ public class TicketServiceImpl implements TicketService {
             e.printStackTrace();
         }
 
-        //Check capacity
+        //TODO Check capacity
         Integer capacity = null;
         try{
 
@@ -95,7 +95,6 @@ public class TicketServiceImpl implements TicketService {
         BigDecimal price = flightDtoResponseEntity.getBody().getPrice().multiply(discountDtoResponseEntity.getBody().getDiscount());
 
         //Update miles
-
         try {
             jmsTemplate.convertAndSend(destinationIncrementMiles, objectMapper.writeValueAsString(
                     new IncrementMilesDto(ticketCreateDto.getUserId(), flightDtoResponseEntity.getBody().getMiles())
@@ -110,14 +109,13 @@ public class TicketServiceImpl implements TicketService {
     }
 
     @Override
-    public Integer flightCapacity(Long flightId) {
+    public SoldTicketsDto flightCapacity(Long flightId) {
         List<Ticket> tickets = ticketRepository.findAllByFlightId(flightId);
-        return tickets.size();
+        return new SoldTicketsDto(tickets.size());
     }
 
     @Override
     public Page<TicketDto> findAllByUserId(Long userId) {
-        //TODO Sort by created date
         return ticketRepository.findAllByUserId(userId).map(ticketMapper::ticketToTicketDto);
     }
 

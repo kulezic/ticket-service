@@ -1,16 +1,13 @@
 package com.a2.ticketservice.service;
 
-import com.a2.ticketservice.dto.FlightCancelDto;
-import com.a2.ticketservice.dto.TicketCancelDto;
-import com.a2.ticketservice.dto.TicketCreateDto;
-import com.a2.ticketservice.dto.TicketDto;
+import com.a2.ticketservice.dto.*;
 import org.springframework.data.domain.Page;
 
 public interface TicketService {
 
     void createTicket(TicketCreateDto ticketCreateDto);
 
-    Integer flightCapacity(Long flightId);
+    SoldTicketsDto flightCapacity(Long flightId);
 
     Page<TicketDto> findAllByUserId(Long userId);
 

@@ -11,9 +11,6 @@ public class TicketCancelDto {
         this.miles = miles;
     }
 
-    public TicketCancelDto(Long userId, BigDecimal miles) {
-    }
-
     public Long getUserId() {
         return userId;
     }
