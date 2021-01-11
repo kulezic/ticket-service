@@ -1,12 +1,9 @@
 package com.a2.ticketservice.service.impl;
 
-import com.a2.ticketservice.client.flightservice.FlightCancelDto;
-import com.a2.ticketservice.client.flightservice.FlightCapacityDto;
 import com.a2.ticketservice.client.flightservice.FlightDto;
 import com.a2.ticketservice.client.userservice.DiscountDto;
 import com.a2.ticketservice.domain.Ticket;
 import com.a2.ticketservice.dto.*;
-import com.a2.ticketservice.exception.CapacityFullException;
 import com.a2.ticketservice.exception.NotFoundException;
 import com.a2.ticketservice.mapper.TicketMapper;
 import com.a2.ticketservice.repository.TicketRepository;
@@ -62,8 +59,6 @@ public class TicketServiceImpl implements TicketService {
 
     public void createTicket(TicketCreateDto ticketCreateDto){
 
-        //TODO add card
-
         //Get flight from flight service
         ResponseEntity<FlightDto> flightDtoResponseEntity = null;
         try {
@@ -76,28 +71,31 @@ public class TicketServiceImpl implements TicketService {
         }catch (Exception e){
             e.printStackTrace();
         }
-
-        //Get discount from user service
+        System.out.println("CREATE" + flightDtoResponseEntity.getStatusCode());
         ResponseEntity<DiscountDto> discountDtoResponseEntity = null;
         try{
-            discountDtoResponseEntity = userServiceRestTemplate.exchange("/user/"+ticketCreateDto.getUserId()+"/discount",
+            //Get discount from user service
+            System.out.println(ticketCreateDto.getUserId() + "USER ID");
+            discountDtoResponseEntity = userServiceRestTemplate.exchange("/user/1/discount",
                     HttpMethod.GET, null, DiscountDto.class);
+        }catch (HttpClientErrorException e){
+            if (e.getStatusCode().equals(HttpStatus.NOT_FOUND))
+                throw new NotFoundException(String.format("User with id: %d not found.", ticketCreateDto.getUserId()));
         }catch (Exception e){
             e.printStackTrace();
         }
 
-        //Check capacity
-        ResponseEntity<FlightCapacityDto> flightCapacityDtoResponseEntity = null;
-        try{
 
-            flightCapacityDtoResponseEntity = flightServiceRestTemplate.exchange("/capacity/" + ticketCreateDto.getFlightId(),
-                    HttpMethod.GET, null, FlightCapacityDto.class);
-        }catch (Exception e){
-            e.printStackTrace();
-        }
+        //TODO Check capacity
+        Integer capacity = null;
+//        try{
+//
+//            discountDtoResponseEntity = userServiceRestTemplate.exchange("/user/"+ticketCreateDto.getUserId()+"/discount",
+//                    HttpMethod.GET, null, DiscountDto.class);
+//        }catch (Exception e){
+//            e.printStackTrace();
+//        }
 
-        if(flightCapacityDtoResponseEntity.getBody().getCapacity() <= flightCapacity(ticketCreateDto.getFlightId()).getSoldTickets())
-            throw new CapacityFullException("Flight capacity is full");
 
         //Calculate price
         BigDecimal price = flightDtoResponseEntity.getBody().getPrice().multiply(discountDtoResponseEntity.getBody().getDiscount());
@@ -119,8 +117,7 @@ public class TicketServiceImpl implements TicketService {
     @Override
     public SoldTicketsDto flightCapacity(Long flightId) {
         List<Ticket> tickets = ticketRepository.findAllByFlightId(flightId);
-        if (tickets != null) return new SoldTicketsDto(tickets.size());
-        return new SoldTicketsDto(0);
+        return new SoldTicketsDto(tickets.size());
     }
 
     @Override
@@ -133,8 +130,7 @@ public class TicketServiceImpl implements TicketService {
         List<Ticket> tickets = ticketRepository.findAllByFlightId(flightCancelDto.getFlightId());
         for (Ticket ticket:
              tickets) {
-            ticket.setTicketStatus("CANCELED");
-            ticketRepository.save(ticket);
+            //TODO Update status as CANCELED
             try {
                 jmsTemplate.convertAndSend(destinationCancelTicket,
                         objectMapper.writeValueAsString(new TicketCancelDto(ticket.getUserId(), flightCancelDto.getMiles())));
