@@ -12,6 +12,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -115,8 +116,8 @@ public class TicketServiceImpl implements TicketService {
     }
 
     @Override
-    public Page<TicketDto> findAllByUserId(Long userId) {
-        return ticketRepository.findAllByUserId(userId).map(ticketMapper::ticketToTicketDto);
+    public List<TicketDto> findAllByUserId(Long userId) {
+        return (List<TicketDto>) ticketRepository.findAllByUserId(userId).stream().map(ticketMapper::ticketToTicketDto);
     }
 
     @Override

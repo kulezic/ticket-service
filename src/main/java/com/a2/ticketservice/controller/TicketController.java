@@ -9,6 +9,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/ticket")
 public class TicketController {
@@ -31,7 +33,7 @@ public class TicketController {
 
     //TODO Sort by created date
     @GetMapping("/user/{id}")
-    public ResponseEntity<Page<TicketDto>> findAllByUserId(@PathVariable("id") Long id){
+    public ResponseEntity<List<TicketDto>> findAllByUserId(@PathVariable("id") Long id){
         return new ResponseEntity<>(ticketService.findAllByUserId(id), HttpStatus.OK);
     }
 }
