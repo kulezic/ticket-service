@@ -3,6 +3,9 @@ package com.a2.ticketservice.service;
 import com.a2.ticketservice.client.flightservice.FlightCancelDto;
 import com.a2.ticketservice.dto.*;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
+import java.util.List;
 
 public interface TicketService {
 
@@ -10,7 +13,7 @@ public interface TicketService {
 
     SoldTicketsDto flightCapacity(Long flightId);
 
-    Page<TicketDto> findAllByUserId(Long userId);
+    List<TicketDto> findAllByUserId(Long userId);
 
     void cancelTickets(FlightCancelDto flightCancelDto);
 }
