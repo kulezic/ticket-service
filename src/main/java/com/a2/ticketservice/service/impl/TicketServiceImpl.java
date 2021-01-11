@@ -71,25 +71,30 @@ public class TicketServiceImpl implements TicketService {
         }catch (Exception e){
             e.printStackTrace();
         }
-
+        System.out.println("CREATE" + flightDtoResponseEntity.getStatusCode());
         ResponseEntity<DiscountDto> discountDtoResponseEntity = null;
         try{
             //Get discount from user service
-            discountDtoResponseEntity = userServiceRestTemplate.exchange("/user/"+ticketCreateDto.getUserId()+"/discount",
+            System.out.println(ticketCreateDto.getUserId() + "USER ID");
+            discountDtoResponseEntity = userServiceRestTemplate.exchange("/user/1/discount",
                     HttpMethod.GET, null, DiscountDto.class);
+        }catch (HttpClientErrorException e){
+            if (e.getStatusCode().equals(HttpStatus.NOT_FOUND))
+                throw new NotFoundException(String.format("User with id: %d not found.", ticketCreateDto.getUserId()));
         }catch (Exception e){
             e.printStackTrace();
         }
+
 
         //TODO Check capacity
         Integer capacity = null;
-        try{
-
-            discountDtoResponseEntity = userServiceRestTemplate.exchange("/user/"+ticketCreateDto.getUserId()+"/discount",
-                    HttpMethod.GET, null, DiscountDto.class);
-        }catch (Exception e){
-            e.printStackTrace();
-        }
+//        try{
+//
+//            discountDtoResponseEntity = userServiceRestTemplate.exchange("/user/"+ticketCreateDto.getUserId()+"/discount",
+//                    HttpMethod.GET, null, DiscountDto.class);
+//        }catch (Exception e){
+//            e.printStackTrace();
+//        }
 
 
         //Calculate price
