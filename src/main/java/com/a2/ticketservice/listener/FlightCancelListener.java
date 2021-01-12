@@ -19,8 +19,8 @@ public class FlightCancelListener {
         this.objectMapper = objectMapper;
         this.ticketService = ticketService;
     }
-
-    @JmsListener(destination = "${destination.cancel-flight}", concurrency = "5-10")
+    //, concurrency = "5-10"
+    @JmsListener(destination = "${destination.cancel-flight}")
     public void handleCancelMiles(Message message){
         try {
             String jsonText = ((TextMessage)message).getText();

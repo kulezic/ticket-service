@@ -21,7 +21,6 @@ public class TicketController {
     }
 
 
-    //TODO Add card to post mapping
     @PostMapping
     ResponseEntity<Void> createTicket(@RequestBody TicketCreateDto ticketCreateDto){
         System.out.println(ticketCreateDto.getUserId() + " user - flight" + ticketCreateDto.getFlightId());
@@ -34,7 +33,6 @@ public class TicketController {
         return new ResponseEntity<>(ticketService.flightCapacity(id), HttpStatus.OK);
     }
 
-    //TODO Sort by created date
     @GetMapping("/user/{id}")
     public ResponseEntity<List<TicketDto>> findAllByUserId(@PathVariable("id") Long id){
         return new ResponseEntity<>(ticketService.findAllByUserId(id), HttpStatus.OK);

@@ -1,10 +1,8 @@
 package com.a2.ticketservice.service.impl;
 
 import com.a2.ticketservice.client.flightservice.FlightCancelDto;
-import com.a2.ticketservice.client.flightservice.FlightCapacityDto;
 import com.a2.ticketservice.client.flightservice.FlightDto;
 import com.a2.ticketservice.client.userservice.DiscountDto;
-import com.a2.ticketservice.client.userservice.UserDto;
 import com.a2.ticketservice.domain.Ticket;
 import com.a2.ticketservice.dto.*;
 import com.a2.ticketservice.exception.CapacityFullException;
@@ -74,10 +72,10 @@ public class TicketServiceImpl implements TicketService {
         }catch (Exception e){
             e.printStackTrace();
         }
-        System.out.println(flightDtoResponseEntity.getBody().getMiles() +" aaaaaaaaaaaaaaaaa");
+
+        //Get discount from user service
         ResponseEntity<DiscountDto> discountDtoResponseEntity = null;
         try{
-            //Get discount from user service
             discountDtoResponseEntity = userServiceRestTemplate.exchange("/user/discount/"+ticketCreateDto.getUserId(),
                     HttpMethod.GET, null, DiscountDto.class);
         }catch (Exception e){
@@ -85,16 +83,11 @@ public class TicketServiceImpl implements TicketService {
         }
 
 
-        //TODO Check capacity
-        Integer capacity = null;
-//        try{
-//
-//            discountDtoResponseEntity = userServiceRestTemplate.exchange("/user/"+ticketCreateDto.getUserId()+"/discount",
-//                    HttpMethod.GET, null, DiscountDto.class);
-//        }catch (Exception e){
-//            e.printStackTrace();
-//        }
+        // Check capacity
+        Integer capacity = flightDtoResponseEntity.getBody().getPlaneDto().getCapacity();
+        Integer soldTickets = ticketRepository.findAllByFlightId(ticketCreateDto.getFlightId()).size();
 
+        if (soldTickets >= capacity) throw new CapacityFullException("Capacity for flight with id: "+ ticketCreateDto.getFlightId()+" is full");
 
         //Calculate price
         BigDecimal price = flightDtoResponseEntity.getBody().getPrice().multiply(discountDtoResponseEntity.getBody().getDiscount());
@@ -129,7 +122,8 @@ public class TicketServiceImpl implements TicketService {
         List<Ticket> tickets = ticketRepository.findAllByFlightId(flightCancelDto.getFlightId());
         for (Ticket ticket:
              tickets) {
-            //TODO Update status as CANCELED
+            ticket.setTicketStatus("CANCELED");
+            ticketRepository.save(ticket);
             try {
                 jmsTemplate.convertAndSend(destinationCancelTicket,
                         objectMapper.writeValueAsString(new TicketCancelDto(ticket.getUserId(), flightCancelDto.getMiles())));
