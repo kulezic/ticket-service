@@ -3,6 +3,7 @@ package com.a2.ticketservice.service.impl;
 import com.a2.ticketservice.client.flightservice.FlightCancelDto;
 import com.a2.ticketservice.client.flightservice.FlightDto;
 import com.a2.ticketservice.client.userservice.DiscountDto;
+import com.a2.ticketservice.client.userservice.UserDto;
 import com.a2.ticketservice.domain.Ticket;
 import com.a2.ticketservice.dto.*;
 import com.a2.ticketservice.exception.CapacityFullException;
@@ -72,11 +73,11 @@ public class TicketServiceImpl implements TicketService {
         }catch (Exception e){
             e.printStackTrace();
         }
-
+System.out.println(flightDtoResponseEntity + "fadaaa");
         //Get discount from user service
         ResponseEntity<DiscountDto> discountDtoResponseEntity = null;
         try{
-            discountDtoResponseEntity = userServiceRestTemplate.exchange("/user/discount/"+ticketCreateDto.getUserId(),
+            discountDtoResponseEntity = userServiceRestTemplate.exchange("/user/"+ticketCreateDto.getUserId()+"/discount",
                     HttpMethod.GET, null, DiscountDto.class);
         }catch (Exception e){
             e.printStackTrace();
@@ -109,6 +110,9 @@ public class TicketServiceImpl implements TicketService {
     @Override
     public SoldTicketsDto flightCapacity(Long flightId) {
         List<Ticket> tickets = ticketRepository.findAllByFlightId(flightId);
+        if(tickets.isEmpty()){
+            return new SoldTicketsDto(0);
+        }
         return new SoldTicketsDto(tickets.size());
     }
 
