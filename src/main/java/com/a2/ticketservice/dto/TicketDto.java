@@ -1,6 +1,7 @@
 package com.a2.ticketservice.dto;
 
 import java.math.BigDecimal;
+import java.util.Date;
 
 public class TicketDto {
     private Long id;
@@ -8,13 +9,20 @@ public class TicketDto {
     private Long flightId;
     private BigDecimal price;
     private String ticketStatus;
+    private Date createdDate;
 
-    public TicketDto(Long id, Long userId, Long flightId, BigDecimal price, String ticketStatus) {
+    public TicketDto(Long id,
+                     Long userId,
+                     Long flightId,
+                     BigDecimal price,
+                     String ticketStatus,
+                     Date createdDate) {
         this.id = id;
         this.userId = userId;
         this.flightId = flightId;
         this.price = price;
         this.ticketStatus = ticketStatus;
+        this.createdDate = createdDate;
     }
 
     public TicketDto() {
@@ -58,5 +66,13 @@ public class TicketDto {
 
     public void setTicketStatus(String ticketStatus) {
         this.ticketStatus = ticketStatus;
+    }
+
+    public Date getCreatedDate() {
+        return createdDate;
+    }
+
+    public void setCreatedDate(Date createdDate) {
+        this.createdDate = createdDate;
     }
 }

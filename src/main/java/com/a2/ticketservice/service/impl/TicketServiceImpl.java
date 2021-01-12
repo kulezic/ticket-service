@@ -1,9 +1,12 @@
 package com.a2.ticketservice.service.impl;
 
+import com.a2.ticketservice.client.flightservice.FlightCancelDto;
+import com.a2.ticketservice.client.flightservice.FlightCapacityDto;
 import com.a2.ticketservice.client.flightservice.FlightDto;
 import com.a2.ticketservice.client.userservice.DiscountDto;
 import com.a2.ticketservice.domain.Ticket;
 import com.a2.ticketservice.dto.*;
+import com.a2.ticketservice.exception.CapacityFullException;
 import com.a2.ticketservice.exception.NotFoundException;
 import com.a2.ticketservice.mapper.TicketMapper;
 import com.a2.ticketservice.repository.TicketRepository;

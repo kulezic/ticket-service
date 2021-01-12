@@ -1,5 +1,6 @@
 package com.a2.ticketservice.domain;
 
+import com.a2.ticketservice.dto.TicketDto;
 import org.springframework.data.annotation.CreatedDate;
 
 import javax.persistence.Entity;
@@ -79,4 +80,5 @@ public class Ticket {
     public void setTicketStatus(String ticketStatus) {
         this.ticketStatus = ticketStatus;
     }
+
 }
