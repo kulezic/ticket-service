@@ -24,6 +24,7 @@ public class TicketController {
     //TODO Add card to post mapping
     @PostMapping
     ResponseEntity<Void> createTicket(@RequestBody TicketCreateDto ticketCreateDto){
+        System.out.println(ticketCreateDto.getUserId() + " user - flight" + ticketCreateDto.getFlightId());
         ticketService.createTicket(ticketCreateDto);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
