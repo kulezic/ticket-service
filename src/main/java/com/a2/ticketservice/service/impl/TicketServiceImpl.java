@@ -2,6 +2,7 @@ package com.a2.ticketservice.service.impl;
 
 import com.a2.ticketservice.client.flightservice.FlightDto;
 import com.a2.ticketservice.client.userservice.DiscountDto;
+import com.a2.ticketservice.client.userservice.UserDto;
 import com.a2.ticketservice.domain.Ticket;
 import com.a2.ticketservice.dto.*;
 import com.a2.ticketservice.exception.NotFoundException;
@@ -11,8 +12,6 @@ import com.a2.ticketservice.service.TicketService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,6 +22,7 @@ import org.springframework.web.client.RestTemplate;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class TicketServiceImpl implements TicketService {
@@ -71,16 +71,12 @@ public class TicketServiceImpl implements TicketService {
         }catch (Exception e){
             e.printStackTrace();
         }
-        System.out.println("CREATE" + flightDtoResponseEntity.getStatusCode());
+        System.out.println(flightDtoResponseEntity.getBody().getMiles() +" aaaaaaaaaaaaaaaaa");
         ResponseEntity<DiscountDto> discountDtoResponseEntity = null;
         try{
             //Get discount from user service
-            System.out.println(ticketCreateDto.getUserId() + "USER ID");
-            discountDtoResponseEntity = userServiceRestTemplate.exchange("/user/1/discount",
+            discountDtoResponseEntity = userServiceRestTemplate.exchange("/user/discount/"+ticketCreateDto.getUserId(),
                     HttpMethod.GET, null, DiscountDto.class);
-        }catch (HttpClientErrorException e){
-            if (e.getStatusCode().equals(HttpStatus.NOT_FOUND))
-                throw new NotFoundException(String.format("User with id: %d not found.", ticketCreateDto.getUserId()));
         }catch (Exception e){
             e.printStackTrace();
         }
@@ -122,7 +118,7 @@ public class TicketServiceImpl implements TicketService {
 
     @Override
     public List<TicketDto> findAllByUserId(Long userId) {
-        return (List<TicketDto>) ticketRepository.findAllByUserId(userId).stream().map(ticketMapper::ticketToTicketDto);
+        return ticketRepository.findAllByUserId(userId).stream().map(ticketMapper::ticketToTicketDto).collect(Collectors.toList());
     }
 
     @Override
