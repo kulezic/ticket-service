@@ -15,7 +15,7 @@ public class TicketMapper {
         ticketDto.setUserId(ticket.getUserId());
         ticketDto.setFlightId(ticket.getFlightId());
         ticketDto.setPrice(ticket.getPrice());
-        ticketDto.setCreatedDate(Date.from(ticket.getCreatedDate()));
+        //ticketDto.setCreatedDate(Date.from(ticket.getCreatedDate()));
         ticketDto.setTicketStatus(ticket.getTicketStatus());
         return ticketDto;
     }
